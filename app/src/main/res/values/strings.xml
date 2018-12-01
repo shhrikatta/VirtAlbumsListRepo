@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Virtuasa Album</string>
+    <string name="error_message">There is an error getting the data: \n</string>
 </resources>
