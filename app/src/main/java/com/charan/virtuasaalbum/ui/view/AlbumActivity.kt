@@ -2,6 +2,7 @@ package com.charan.virtuasaalbum.ui.view
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
@@ -76,7 +77,11 @@ class AlbumActivity : AppCompatActivity(), OnItemClickListener {
         })
 
         albumViewModel.albumDetailsResult().observe(this, Observer<Album>   {
-            Toast.makeText(this, it?.title, Toast.LENGTH_LONG).show()
+            if (it!!.id == 0)   {
+                Toast.makeText(this, "Invalid Album", Toast.LENGTH_LONG).show()
+            }   else    {
+                startActivity(Intent(this, AlbumDetails::class.java).putExtra("ALBUM", it))
+            }
         })
     }
 
