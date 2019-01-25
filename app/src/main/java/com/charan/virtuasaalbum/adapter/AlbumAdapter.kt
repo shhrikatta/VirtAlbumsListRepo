@@ -1,52 +1,61 @@
 package com.charan.virtuasaalbum.adapter
 
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.charan.virtuasaalbum.OnItemClickListener
 import java.util.ArrayList
 import com.charan.virtuasaalbum.R
 import com.charan.virtuasaalbum.ui.model.Album
 
 
 class AlbumAdapter(
-    cryptocurrencies: List<Album>?) : RecyclerView.Adapter<AlbumAdapter.CryptocurrencieViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptocurrencieViewHolder {
+    listAlbums: List<Album>?, val onItemClickListener: (Album) -> Unit) : RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumViewHolder {
         val itemView = LayoutInflater.from(parent?.context).inflate(R.layout.album_list_item_constraint,
             parent, false)
-        return CryptocurrencieViewHolder(itemView)
+        return AlbumViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: CryptocurrencieViewHolder, position: Int) {
-        val cryptocurrencyItem = cryptocurrenciesList[position]
-        holder?.cryptocurrencyListItem(cryptocurrencyItem)
+    override fun onBindViewHolder(holder: AlbumViewHolder, position: Int) {
+        val albumItem: Album = listAlbums[position]
+
+        holder.item.setOnClickListener {
+            onItemClickListener(albumItem)
+        }
+
+        holder?.albumListItem(albumItem)
     }
 
-    private var cryptocurrenciesList = ArrayList<Album>()
+    private var listAlbums = ArrayList<Album>()
 
   init {
-    this.cryptocurrenciesList = cryptocurrencies as ArrayList<Album>
+    this.listAlbums = listAlbums as ArrayList<Album>
   }
 
   override fun getItemCount(): Int {
-    return cryptocurrenciesList.size
+    return listAlbums.size
   }
 
-  fun addCryptocurrencies(cryptocurrencies: List<Album>){
-    val initPosition = cryptocurrenciesList.size
-    cryptocurrenciesList.addAll(cryptocurrencies)
-    notifyItemRangeInserted(initPosition, cryptocurrenciesList.size)
+  fun addAlbums(listAlbums: List<Album>){
+    val initPosition = listAlbums.size
+    this.listAlbums.addAll(listAlbums)
+    notifyItemRangeInserted(initPosition, listAlbums.size)
   }
 
-  class CryptocurrencieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+  class AlbumViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    var cryptocurrencyId = itemView.findViewById<TextView>(R.id.tvCryptoId)
-    var cryptocurrencyTitle = itemView.findViewById<TextView>(R.id.tvCryptoTitle)
+    var albumId = itemView.findViewById<TextView>(R.id.tvAlbumId)
+    var albumTitle = itemView.findViewById<TextView>(R.id.tvAlbumTitle)
+    var item = itemView.findViewById<CardView>(R.id.cardView)
 
-    fun cryptocurrencyListItem(cryptocurrencyItem: Album) {
-      cryptocurrencyId.text = cryptocurrencyItem.userId.toString()
-      cryptocurrencyTitle.text = cryptocurrencyItem.title
+    fun albumListItem(albumItem: Album) {
+      albumId.text = albumItem.userId.toString()
+      albumTitle.text = albumItem.title
     }
   }
 }

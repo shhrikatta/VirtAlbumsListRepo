@@ -14,6 +14,16 @@ class AlbumRepository @Inject constructor(val apiInterface: ApiInterface,
                                           val albumDao: AlbumDao, val utils: Utils
 ) {
 
+  fun getAlbumDetails(id: Int): Observable<Album> {
+    val hasConnection = utils.isConnectedToInternet()
+      var observableFromApi: Observable<Album> = Observable.just(Album(0, 0, ""))
+      if (hasConnection){
+      observableFromApi = getAlbumDetailsFromApi(id)
+    }
+
+    return observableFromApi
+  }
+
   fun getAlbum(limit: Int, offset: Int): Observable<List<Album>> {
     val hasConnection = utils.isConnectedToInternet()
     var observableFromApi: Observable<List<Album>>? = null
@@ -24,6 +34,12 @@ class AlbumRepository @Inject constructor(val apiInterface: ApiInterface,
 
     return if (hasConnection) Observable.concatArrayEager(observableFromApi, observableFromDb)
     else observableFromDb
+  }
+
+  fun getAlbumDetailsFromApi(id: Int): Observable<Album> {
+    return apiInterface.getAlbumDetails(id)
+        .doOnNext {
+        }
   }
 
   fun getAlbumFromApi(): Observable<List<Album>> {
@@ -37,7 +53,7 @@ class AlbumRepository @Inject constructor(val apiInterface: ApiInterface,
   }
 
   fun getAlbumFromDb(limit: Int, offset: Int): Observable<List<Album>> {
-    return albumDao.queryAlbum(limit, offset)
+      return albumDao.queryAlbum(limit, offset)
         .toObservable()
         .doOnNext {
           //Print log it.size :)

@@ -24,19 +24,19 @@ class AppModule(val app: Application) {
 
   @Provides
   @Singleton
-  fun provideCryptocurrenciesDatabase(app: Application): Database = Room.databaseBuilder(app,
+  fun provideAlbumsDatabase(app: Application): Database = Room.databaseBuilder(app,
       Database::class.java, Constants.DATABASE_NAME)
       .fallbackToDestructiveMigration()
       .build()
 
   @Provides
   @Singleton
-  fun provideCryptocurrenciesDao(
+  fun provideAlbumsDao(
       database: Database): AlbumDao = database.albumDao()
 
   @Provides
   @Singleton
-  fun provideCryptocurrenciesViewModelFactory(
+  fun provideAlbumsViewModelFactory(
       factory: AlbumViewModelFactory): ViewModelProvider.Factory = factory
 
   @Provides

@@ -13,6 +13,12 @@ interface AlbumDao {
   @Query("SELECT * FROM album ORDER BY title limit :limit offset :offset")
   fun queryAlbum(limit:Int, offset:Int): Single<List<Album>>
 
+/*
+  @Query("SELECT * FROM album WHERE title = :title ORDER BY title limit :limit offset :offset")
+  fun queryAlbumBytitle(limit:Int, offset:Int, title:String): Single<List<Album>>
+*/
+
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun insertAlbum(album: Album)
 

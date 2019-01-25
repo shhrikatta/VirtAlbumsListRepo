@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Toast
+import com.charan.virtuasaalbum.OnItemClickListener
 import com.charan.virtuasaalbum.R
 import com.charan.virtuasaalbum.adapter.AlbumAdapter
 import com.charan.virtuasaalbum.ui.model.Album
@@ -20,11 +22,19 @@ import kotlinx.android.synthetic.main.activity_album.*
 import java.util.ArrayList
 import javax.inject.Inject
 
-class AlbumActivity : AppCompatActivity() {
+class AlbumActivity : AppCompatActivity(), OnItemClickListener {
+
+    override fun onItemClicked(album: Album) {
+        albumViewModel.loadAlbumDetails(album.id)
+    }
 
     @Inject
     lateinit var albumViewModelFactory: AlbumViewModelFactory
-    var albumAdapter = AlbumAdapter(ArrayList())
+
+    var albumAdapter = AlbumAdapter(ArrayList())    {
+        albumViewModel.loadAlbumDetails(it.id)
+    }
+
     lateinit var albumViewModel: AlbumViewModel
     var currentPage = 0
 
@@ -44,7 +54,7 @@ class AlbumActivity : AppCompatActivity() {
             Observer<List<Album>> {
                 if (it != null) {
                     val position = albumAdapter.itemCount
-                    albumAdapter.addCryptocurrencies(it)
+                    albumAdapter.addAlbums(it)
                     recycler.adapter = albumAdapter
                     recycler.scrollToPosition(position - Constants.LIST_SCROLLING)
                 }
@@ -63,6 +73,10 @@ class AlbumActivity : AppCompatActivity() {
             } else{
                 progressBar.visibility = View.GONE
             }
+        })
+
+        albumViewModel.albumDetailsResult().observe(this, Observer<Album>   {
+            Toast.makeText(this, it?.title, Toast.LENGTH_LONG).show()
         })
     }
 

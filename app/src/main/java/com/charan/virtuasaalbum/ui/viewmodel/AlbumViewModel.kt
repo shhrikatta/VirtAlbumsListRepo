@@ -17,12 +17,18 @@ class AlbumViewModel @Inject constructor(
 ) : ViewModel() {
 
   var albumResult: MutableLiveData<List<Album>> = MutableLiveData()
+  var albumDetailsResult: MutableLiveData<Album> = MutableLiveData()
   var albumError: MutableLiveData<String> = MutableLiveData()
   var albumLoader: MutableLiveData<Boolean> = MutableLiveData()
-  lateinit var disposableObserver: DisposableObserver<List<Album>>
+  lateinit var albumsObserver: DisposableObserver<List<Album>>
+  lateinit var albumDetailsObserver: DisposableObserver<Album>
 
   fun albumResult(): LiveData<List<Album>> {
     return albumResult
+  }
+
+  fun albumDetailsResult(): LiveData<Album> {
+    return albumDetailsResult
   }
 
   fun albumError(): LiveData<String> {
@@ -37,7 +43,7 @@ class AlbumViewModel @Inject constructor(
 
       albumLoader.postValue(true)
 
-    disposableObserver = object : DisposableObserver<List<Album>>() {
+    albumsObserver = object : DisposableObserver<List<Album>>() {
       override fun onComplete() {
 
       }
@@ -57,11 +63,38 @@ class AlbumViewModel @Inject constructor(
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
         .debounce(400, MILLISECONDS)
-        .subscribe(disposableObserver)
+        .subscribe(albumsObserver)
+  }
+
+  fun loadAlbumDetails(id:Int) {
+
+      albumLoader.postValue(true)
+
+    albumDetailsObserver = object : DisposableObserver<Album>() {
+      override fun onComplete() {
+
+      }
+
+      override fun onNext(album: Album) {
+        albumDetailsResult.postValue(album)
+        albumLoader.postValue(false)
+      }
+
+      override fun onError(e: Throwable) {
+        albumError.postValue(e.message)
+        albumLoader.postValue(false)
+      }
+    }
+
+    albumRepository.getAlbumDetails(id)
+        .subscribeOn(Schedulers.newThread())
+        .observeOn(AndroidSchedulers.mainThread())
+        .debounce(400, MILLISECONDS)
+        .subscribe(albumDetailsObserver)
   }
 
   fun disposeElements(){
-    if(null != disposableObserver && !disposableObserver.isDisposed) disposableObserver.dispose()
+    if(null != albumsObserver && !albumsObserver.isDisposed) albumsObserver.dispose()
   }
 
 }
